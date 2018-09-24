@@ -58,12 +58,11 @@
     <thrift.version>0.13.0</thrift.version>
     <slf4j.version>1.7.30</slf4j.version>
     <snappy.version>1.1.7.7</snappy.version>
-    <velocity.version>1.7</velocity.version>
+    <velocity.version>2.0</velocity.version>
     <maven.version>2.0.11</maven.version>
     <ant.version>1.10.0</ant.version>
     <commons-cli.version>1.4</commons-cli.version>
     <commons-codec.version>1.15</commons-codec.version>
-    <commons-collections.version>3.2.2</commons-collections.version>
     <commons-compress.version>1.19</commons-compress.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-logging.version>1.2</commons-logging.version>
@@ -553,7 +552,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.velocity</groupId>
-        <artifactId>velocity</artifactId>
+        <artifactId>velocity-engine-core</artifactId>
         <version>${velocity.version}</version>
       </dependency>
       <dependency>
@@ -610,11 +609,6 @@
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>${joda.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-collections</groupId>
-        <artifactId>commons-collections</artifactId>
-        <version>${commons-collections.version}</version>
       </dependency>
       <!-- Bump this to a higher version to avoid CVE from old plexus-utils from Maven -->
       <dependency>
