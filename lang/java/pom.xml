@@ -93,7 +93,6 @@
   </properties>
 
   <modules>
-    <module>guava</module>
     <module>avro</module>
     <module>compiler</module>
     <module>maven-plugin</module>

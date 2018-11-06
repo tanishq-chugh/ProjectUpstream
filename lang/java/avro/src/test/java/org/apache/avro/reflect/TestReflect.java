@@ -550,7 +550,7 @@ public class TestReflect {
     check(o.getClass(), schemaJson);
   }
 
-  private void check(Type type, String schemaJson) {
+  private void check(java.lang.reflect.Type type, String schemaJson) {
     assertEquals(schemaJson, ReflectData.get().getSchema(type).toString());
   }
 
