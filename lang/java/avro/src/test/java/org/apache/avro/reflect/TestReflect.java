@@ -723,7 +723,8 @@ public class TestReflect {
     String saved = System.getProperty("avro.disable.unsafe");
     try {
       System.setProperty("avro.disable.unsafe", "true");
-      ReflectData.ACCESSOR_CACHE.clear();
+      ReflectData.ACCESSOR_CACHE.remove(multipleAnnotationRecord.class);
+      ReflectData.ACCESSOR_CACHE.remove(AnotherSampleRecord.class);
       ReflectionUtil.resetFieldAccess();
       testMultipleAnnotations();
       testRecordWithNullIO();
@@ -732,7 +733,8 @@ public class TestReflect {
         System.clearProperty("avro.disable.unsafe");
       else
         System.setProperty("avro.disable.unsafe", saved);
-      ReflectData.ACCESSOR_CACHE.clear();
+      ReflectData.ACCESSOR_CACHE.remove(multipleAnnotationRecord.class);
+      ReflectData.ACCESSOR_CACHE.remove(AnotherSampleRecord.class);
       ReflectionUtil.resetFieldAccess();
     }
   }
