@@ -55,7 +55,7 @@
     <netty.version>${cdh.io.netty.version}</netty.version>
     <paranamer.version>2.8</paranamer.version>
     <protobuf.version>${cdh.protobuf.version}</protobuf.version>
-    <thrift.version>0.9.3-cloudera.1</thrift.version>
+    <thrift.version>0.11.0</thrift.version>
     <slf4j.version>${cdh.slf4j.version}</slf4j.version>
     <snappy.version>${cdh.hadoop-snappy.version}</snappy.version>
     <velocity.version>1.7</velocity.version>
@@ -66,7 +66,7 @@
     <commons-compress.version>${cdh.commons-compress.version}</commons-compress.version>
     <commons-lang.version>${cdh.commons-lang.version}</commons-lang.version>
     <commons-logging.version>${cdh.commons-logging.version}</commons-logging.version>
-    <tukaani.version>1.6</tukaani.version>
+    <tukaani.version>1.8</tukaani.version>
     <easymock.version>3.4</easymock.version>
     <hamcrest.version>1.3</hamcrest.version>
     <joda.version>${cdh.joda-time.version}</joda.version>
