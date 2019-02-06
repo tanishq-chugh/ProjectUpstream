@@ -81,6 +81,19 @@
     </repository>
   </repositories>
 
+  <distributionManagement>
+      <repository>
+          <id>${repo.id}</id>
+          <name>Internal Repository</name>
+          <url>${internal.maven.repo}</url>
+      </repository>
+      <snapshotRepository>
+          <id>${repo.id}</id>
+          <name>Internal Repository</name>
+          <url>${internal.maven.repo}</url>
+      </snapshotRepository>
+  </distributionManagement>
+
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/avro/trunk</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/avro/trunk</developerConnection>
