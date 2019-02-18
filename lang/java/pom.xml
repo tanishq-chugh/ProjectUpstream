@@ -92,7 +92,6 @@
     <file-management.version>1.2.1</file-management.version>
     <shade-plugin.version>3.0.0</shade-plugin.version>
     <archetype-plugin.version>2.4</archetype-plugin.version>
-    <assembly-plugin.version>3.1.1</assembly-plugin.version>
   </properties>
 
   <modules>
@@ -107,7 +106,6 @@
     <module>protobuf</module>
     <module>thrift</module>
     <module>archetypes</module>
-    <module>distro</module>
   </modules>
 
   <build>
@@ -176,20 +174,6 @@
             <source>${javaVersion}</source>
             <target>${targetJavaVersion}</target>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>${assembly-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>assembly</id>
-              <phase>package</phase>
-              <goals>
-                <goal>single</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
