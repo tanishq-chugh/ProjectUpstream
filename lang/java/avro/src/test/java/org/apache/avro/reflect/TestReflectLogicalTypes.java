@@ -21,9 +21,11 @@ package org.apache.avro.reflect;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import org.apache.avro.Conversion;
 import org.apache.avro.Conversions;
@@ -31,6 +33,7 @@ import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
+import org.apache.avro.data.TimeConversions;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.file.FileReader;
@@ -63,6 +66,7 @@ public class TestReflectLogicalTypes {
   public static void addUUID() {
     REFLECT.addLogicalTypeConversion(new Conversions.UUIDConversion());
     REFLECT.addLogicalTypeConversion(new Conversions.DecimalConversion());
+    REFLECT.addLogicalTypeConversion(new TimeConversions.LocalTimestampMillisConversion());
   }
 
   @Test
@@ -702,6 +706,18 @@ public class TestReflectLogicalTypes {
         read(REFLECT.createDatumReader(stringArraySchema), test).get(0));
   }
 
+  @Test
+  public void testReflectedSchemaLocalDateTime() {
+    Schema actual = REFLECT.getSchema(RecordWithTimestamps.class);
+
+    Assert.assertEquals("Should have the correct record name", "org.apache.avro.reflect", actual.getNamespace());
+    Assert.assertEquals("Should have the correct record name", "RecordWithTimestamps", actual.getName());
+    Assert.assertEquals("Should have the correct physical type", Schema.Type.LONG,
+        actual.getField("localDateTime").schema().getType());
+    Assert.assertEquals("Should have the correct logical type", LogicalTypes.localTimestampMillis(),
+        LogicalTypes.fromSchema(actual.getField("localDateTime").schema()));
+  }
+
   private static <D> List<D> read(DatumReader<D> reader, File file) throws IOException {
     List<D> data = new ArrayList<D>();
     FileReader<D> fileReader = null;
@@ -824,6 +840,27 @@ class RecordWithUUIDList {
     }
     RecordWithUUIDList that = (RecordWithUUIDList) obj;
     return this.uuids.equals(that.uuids);
+  }
+}
+
+class RecordWithTimestamps {
+  LocalDateTime localDateTime;
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(localDateTime);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (!(obj instanceof RecordWithTimestamps)) {
+      return false;
+    }
+    RecordWithTimestamps that = (RecordWithTimestamps) obj;
+    return Objects.equals(that.localDateTime, that.localDateTime);
   }
 }
 
