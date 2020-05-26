@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -68,7 +68,7 @@ public class TestNettyServerWithCallbacks {
     System.out.println("server port : " + serverPort);
 
     transceiver = new NettyTransceiver(new InetSocketAddress(
-        serverPort), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
+      serverPort), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
     simpleClient = SpecificRequestor.getClient(Simple.Callback.class, transceiver);
   }
 
@@ -113,9 +113,9 @@ public class TestNettyServerWithCallbacks {
   public void echo() throws Exception {
     TestRecord record = TestRecord.newBuilder().setHash(
         new org.apache.avro.test.MD5(
-            new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8 })).
-        setKind(org.apache.avro.test.Kind.FOO).
-        setName("My Record").build();
+          new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8 })).
+      setKind(org.apache.avro.test.Kind.FOO).
+      setName("My Record").build();
 
     // Test synchronous RPC:
     Assert.assertEquals(record, simpleClient.echo(record));
@@ -206,9 +206,6 @@ public class TestNettyServerWithCallbacks {
       Assert.fail("Expected " + TestError.class.getCanonicalName());
     } catch (TestError e) {
       // Expected
-    } catch (AvroRemoteException e) {
-      e.printStackTrace();
-      Assert.fail("Unexpected error: " + e.toString());
     }
 
     // Test asynchronous RPC (future):
@@ -219,11 +216,11 @@ public class TestNettyServerWithCallbacks {
       Assert.fail("Expected " + TestError.class.getCanonicalName() + " to be thrown");
     } catch (ExecutionException e) {
       Assert.assertTrue("Expected " + TestError.class.getCanonicalName(),
-          e.getCause() instanceof TestError);
+        e.getCause() instanceof TestError);
     }
     Assert.assertNotNull(future.getError());
     Assert.assertTrue("Expected " + TestError.class.getCanonicalName(),
-        future.getError() instanceof TestError);
+      future.getError() instanceof TestError);
     Assert.assertNull(future.getResult());
 
     // Test asynchronous RPC (callback):
@@ -262,14 +259,14 @@ public class TestNettyServerWithCallbacks {
     // Start up a second server so that closing the server doesn't
     // interfere with the other unit tests:
     Server server2 = new NettyServer(new SpecificResponder(Simple.class, simpleService),
-        new InetSocketAddress(0));
+      new InetSocketAddress(0));
     server2.start();
     try {
       int serverPort = server2.getPort();
       System.out.println("server2 port : " + serverPort);
 
       Transceiver transceiver2 = new NettyTransceiver(new InetSocketAddress(
-          serverPort), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
+        serverPort), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
       try {
         Simple.Callback simpleClient2 =
           SpecificRequestor.getClient(Simple.Callback.class, transceiver2);
@@ -330,7 +327,7 @@ public class TestNettyServerWithCallbacks {
     // interfere with the other unit tests:
     BlockingSimpleImpl blockingSimpleImpl = new BlockingSimpleImpl();
     Server server2 = new NettyServer(new SpecificResponder(Simple.class,
-        blockingSimpleImpl), new InetSocketAddress(0));
+      blockingSimpleImpl), new InetSocketAddress(0));
     server2.start();
     try {
       int serverPort = server2.getPort();
@@ -338,7 +335,7 @@ public class TestNettyServerWithCallbacks {
 
       CallFuture<Integer> addFuture = new CallFuture<Integer>();
       Transceiver transceiver2 = new NettyTransceiver(new InetSocketAddress(
-          serverPort), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
+        serverPort), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
       try {
         Simple.Callback simpleClient2 =
           SpecificRequestor.getClient(Simple.Callback.class, transceiver2);
@@ -383,7 +380,7 @@ public class TestNettyServerWithCallbacks {
     // interfere with the other unit tests:
     BlockingSimpleImpl blockingSimpleImpl = new BlockingSimpleImpl();
     final Server server2 = new NettyServer(new SpecificResponder(Simple.class,
-        blockingSimpleImpl), new InetSocketAddress(0));
+      blockingSimpleImpl), new InetSocketAddress(0));
     server2.start();
 
     Transceiver transceiver2 = null;
@@ -393,10 +390,10 @@ public class TestNettyServerWithCallbacks {
       System.out.println("server2 port : " + serverPort);
 
       transceiver2 = new NettyTransceiver(new InetSocketAddress(
-          serverPort), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
+        serverPort), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
 
       final Simple.Callback simpleClient2 =
-          SpecificRequestor.getClient(Simple.Callback.class, transceiver2);
+        SpecificRequestor.getClient(Simple.Callback.class, transceiver2);
 
       // Acquire the method-enter permit, which will be released by the
       // server method once we call it
@@ -413,6 +410,7 @@ public class TestNettyServerWithCallbacks {
             simpleClient2.add(3, 4);
             Assert.fail("Expected an exception");
           } catch (Exception e) {
+            e.printStackTrace();
             // expected
           }
         }
@@ -457,7 +455,7 @@ public class TestNettyServerWithCallbacks {
     // interfere with the other unit tests:
     SimpleImpl simpleImpl = new BlockingSimpleImpl();
     Server server2 = new NettyServer(new SpecificResponder(Simple.class,
-        simpleImpl), new InetSocketAddress(0));
+      simpleImpl), new InetSocketAddress(0));
     try {
       server2.start();
       int serverPort = server2.getPort();
@@ -465,9 +463,9 @@ public class TestNettyServerWithCallbacks {
 
       // Initialize a client, and establish a connection to the server:
       Transceiver transceiver2 = new NettyTransceiver(new InetSocketAddress(
-          serverPort), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
+        serverPort), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
       Simple.Callback simpleClient2 =
-          SpecificRequestor.getClient(Simple.Callback.class, transceiver2);
+        SpecificRequestor.getClient(Simple.Callback.class, transceiver2);
       Assert.assertEquals(3, simpleClient2.add(1, 2));
 
       // Restart the server:
@@ -475,13 +473,13 @@ public class TestNettyServerWithCallbacks {
       try {
         simpleClient2.add(2, -1);
         Assert.fail("Client should not be able to invoke RPCs " +
-            "because server is no longer running");
+          "because server is no longer running");
       } catch (Exception e) {
         // Expected since server is no longer running
       }
       Thread.sleep(2000L);
       server2 = new NettyServer(new SpecificResponder(Simple.class,
-          simpleImpl), new InetSocketAddress(serverPort));
+        simpleImpl), new InetSocketAddress(serverPort));
       server2.start();
 
       // Invoke an RPC using the same client, which should reestablish the
@@ -527,8 +525,8 @@ public class TestNettyServerWithCallbacks {
     threadPool.shutdown();
     Assert.assertTrue("Timed out shutting down thread pool", threadPool.awaitTermination(2, TimeUnit.SECONDS));
     System.out.println("Completed " + rpcCount.get() + " RPCs in " + runTimeMillis +
-        "ms => " + (((double)rpcCount.get() / (double)runTimeMillis) * 1000) + " RPCs/sec, " +
-        ((double)runTimeMillis / (double)rpcCount.get()) + " ms/RPC.");
+      "ms => " + (((double)rpcCount.get() / (double)runTimeMillis) * 1000) + " RPCs/sec, " +
+      ((double)runTimeMillis / (double)rpcCount.get()) + " ms/RPC.");
   }
 
   /**
@@ -668,7 +666,7 @@ public class TestNettyServerWithCallbacks {
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
         throw new RuntimeException(e);
-    }
+      }
     }
 
     /**
@@ -687,14 +685,14 @@ public class TestNettyServerWithCallbacks {
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
         throw new RuntimeException(e);
-  }
-}
+      }
+    }
 
     /**
      * Releases a single permit to the semaphore.
      */
     public void releaseEnterPermit() {
-        enterSemaphore.release();
+      enterSemaphore.release();
     }
   }
 }

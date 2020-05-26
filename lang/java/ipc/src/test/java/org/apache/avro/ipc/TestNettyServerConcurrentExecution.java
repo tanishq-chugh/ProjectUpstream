@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 
 import org.apache.avro.AvroRemoteException;
 import org.apache.avro.ipc.specific.SpecificRequestor;
@@ -30,8 +29,6 @@ import org.apache.avro.ipc.specific.SpecificResponder;
 import org.apache.avro.test.Simple;
 import org.apache.avro.test.TestError;
 import org.apache.avro.test.TestRecord;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -83,20 +80,15 @@ public class TestNettyServerConcurrentExecution {
   @Test(timeout=30000)
   public void test() throws Exception {
     final CountDownLatch waitLatch = new CountDownLatch(1);
-    server = new NettyServer(
-        new SpecificResponder(Simple.class, new SimpleImpl(waitLatch)),
-        new InetSocketAddress(0),
-        new NioServerSocketChannelFactory
-          (Executors.newCachedThreadPool(), Executors.newCachedThreadPool()),
-        new ExecutionHandler(Executors.newCachedThreadPool()));
+    server = new NettyServer(new SpecificResponder(Simple.class, new SimpleImpl(waitLatch)), new InetSocketAddress(0));
     server.start();
 
     transceiver = new NettyTransceiver(new InetSocketAddress(
-        server.getPort()), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
+      server.getPort()), TestNettyServer.CONNECT_TIMEOUT_MILLIS);
 
     // 1. Create the RPC proxy, and establish the handshake:
     final Simple.Callback simpleClient =
-        SpecificRequestor.getClient(Simple.Callback.class, transceiver);
+      SpecificRequestor.getClient(Simple.Callback.class, transceiver);
     SpecificRequestor.getRemote(simpleClient);    // force handshake
 
     /*
@@ -109,7 +101,7 @@ public class TestNettyServerConcurrentExecution {
       @Override
       public void run() {
         setName(TestNettyServerConcurrentExecution.class.getSimpleName() +
-            "Ack Thread");
+          "Ack Thread");
         try {
           // Step 2a:
           waitLatch.await();
@@ -130,6 +122,7 @@ public class TestNettyServerConcurrentExecution {
 
     // 4. If control reaches here, both RPCs have executed concurrently
     Assert.assertEquals("wait", response);
+    Thread.sleep(2000);
   }
 
   /**

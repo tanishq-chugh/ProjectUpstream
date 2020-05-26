@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,14 +22,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import static org.junit.Assert.assertEquals;
 
+import io.netty.channel.socket.SocketChannel;
+
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.junit.Assert;
-
+import org.apache.avro.ipc.Responder;
+import org.apache.avro.ipc.Server;
+import org.apache.avro.ipc.Transceiver;
 import org.apache.avro.ipc.specific.SpecificRequestor;
 import org.apache.avro.ipc.specific.SpecificResponder;
 import org.apache.avro.test.Mail;
@@ -39,11 +44,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestNettyServer {
-  static final long CONNECT_TIMEOUT_MILLIS = 2000; // 2 sec
-  private static Server server;
-  private static Transceiver transceiver;
-  private static Mail proxy;
-  private static MailImpl mailService;
+  static final int CONNECT_TIMEOUT_MILLIS = 2000; // 2 sec
+  protected static Server server;
+  protected static Transceiver transceiver;
+  protected static Mail proxy;
+  protected static MailImpl mailService;
+  protected static Consumer<SocketChannel> channelInitializer;
 
   public static class MailImpl implements Mail {
 
@@ -51,9 +57,8 @@ public class TestNettyServer {
 
     // in this simple example just return details of the message
     public String send(Message message) {
-      return "Sent message to ["+ message.getTo().toString() +
-          "] from [" + message.getFrom().toString() + "] with body [" +
-          message.getBody().toString() + "]";
+      return "Sent message to [" + message.getTo() + "] from [" + message.getFrom() + "] with body ["
+          + message.getBody() + "]";
     }
 
     public void fireandforget(Message message) {
@@ -73,48 +78,47 @@ public class TestNettyServer {
     }
   }
 
-  @BeforeClass
-  public static void initializeConnections()throws Exception {
-    // start server
+  public static void initializeConnections(Consumer<SocketChannel> initializer) throws Exception {
+    initializeConnections(initializer, initializer);
+  }
+
+  public static void initializeConnections(Consumer<SocketChannel> serverInitializer,
+      Consumer<SocketChannel> transceiverInitializer) throws Exception {
     System.out.println("starting server...");
+    channelInitializer = transceiverInitializer;
     mailService = new MailImpl();
     Responder responder = new SpecificResponder(Mail.class, mailService);
-    server = initializeServer(responder);
+    server = new NettyServer(responder, new InetSocketAddress(0), serverInitializer);
     server.start();
 
     int serverPort = server.getPort();
     System.out.println("server port : " + serverPort);
 
-    transceiver = initializeTransceiver(serverPort);
+    transceiver = new NettyTransceiver(new InetSocketAddress(serverPort), CONNECT_TIMEOUT_MILLIS,
+        transceiverInitializer, null);
     proxy = SpecificRequestor.getClient(Mail.class, transceiver);
   }
 
-  protected static Server initializeServer(Responder responder) {
-    return new NettyServer(responder, new InetSocketAddress(0));
-  }
-
-  protected static Transceiver initializeTransceiver(int serverPort) throws IOException {
-    return new NettyTransceiver(new InetSocketAddress(
-        serverPort), CONNECT_TIMEOUT_MILLIS);
+  @BeforeClass
+  public static void initializeConnections() throws Exception {
+    initializeConnections(null);
   }
 
   @AfterClass
-  public static void tearDownConnections() throws Exception{
+  public static void tearDownConnections() throws Exception {
     transceiver.close();
     server.close();
   }
 
   @Test
   public void testRequestResponse() throws Exception {
-      for(int x = 0; x < 5; x++) {
-        verifyResponse(proxy.send(createMessage()));
-      }
+    for (int x = 0; x < 5; x++) {
+      verifyResponse(proxy.send(createMessage()));
+    }
   }
 
   private void verifyResponse(String result) {
-    Assert.assertEquals(
-        "Sent message to [wife] from [husband] with body [I love you!]",
-        result.toString());
+    Assert.assertEquals("Sent message to [wife] from [husband] with body [I love you!]", result);
   }
 
   @Test
@@ -141,8 +145,8 @@ public class TestNettyServer {
 
   @Test
   public void testConnectionsCount() throws Exception {
-    Transceiver transceiver2 = new NettyTransceiver(new InetSocketAddress(
-            server.getPort()), CONNECT_TIMEOUT_MILLIS);
+    Transceiver transceiver2 = new NettyTransceiver(new InetSocketAddress(server.getPort()), CONNECT_TIMEOUT_MILLIS,
+        channelInitializer);
     Mail proxy2 = SpecificRequestor.getClient(Mail.class, transceiver2);
     proxy.fireandforget(createMessage());
     proxy2.fireandforget(createMessage());
@@ -161,11 +165,7 @@ public class TestNettyServer {
   }
 
   private Message createMessage() {
-    Message msg = Message.newBuilder().
-      setTo("wife").
-      setFrom("husband").
-      setBody("I love you!").
-      build();
+    Message msg = Message.newBuilder().setTo("wife").setFrom("husband").setBody("I love you!").build();
     return msg;
   }
 
@@ -175,14 +175,15 @@ public class TestNettyServer {
     int port = server.getPort();
     String msg = "GET /status HTTP/1.1\n\n";
     InetSocketAddress sockAddr = new InetSocketAddress("127.0.0.1", port);
-    Socket sock = new Socket();
-    sock.connect(sockAddr);
-    OutputStream out = sock.getOutputStream();
-    out.write(msg.getBytes(Charset.forName("UTF-8")));
-    out.flush();
-    byte[] buf = new byte[2048];
-    int bytesRead = sock.getInputStream().read(buf);
-    Assert.assertTrue("Connection should have been closed", bytesRead == -1);
-  }
 
+    try (Socket sock = new Socket()) {
+      sock.connect(sockAddr);
+      OutputStream out = sock.getOutputStream();
+      out.write(msg.getBytes(StandardCharsets.UTF_8));
+      out.flush();
+      byte[] buf = new byte[2048];
+      int bytesRead = sock.getInputStream().read(buf);
+      Assert.assertTrue("Connection should have been closed: " + bytesRead, bytesRead == -1);
+    }
+  }
 }

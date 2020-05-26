@@ -38,7 +38,7 @@
     <osgi.import>
       !org.apache.avro.ipc*,
       org.apache.avro*;version="${project.version}",
-      org.jboss.netty*,
+      io.netty*,
       javax.servlet*;resolution:=optional,
       org.eclipse*;resolution:=optional,
       org.apache.velocity*;resolution:=optional,
@@ -134,7 +134,8 @@
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
-      <artifactId>netty</artifactId>
+      <artifactId>netty-all</artifactId>
+      <version>${netty.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.velocity</groupId>
