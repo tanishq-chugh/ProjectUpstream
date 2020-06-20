@@ -55,7 +55,7 @@
     <netty.version>${cdh.io.netty.version}</netty.version>
     <paranamer.version>2.8</paranamer.version>
     <protobuf.version>${cdh.protobuf.version}</protobuf.version>
-    <thrift.version>0.11.0</thrift.version>
+    <thrift.version>0.13.0</thrift.version>
     <slf4j.version>${cdh.slf4j.version}</slf4j.version>
     <snappy.version>${cdh.hadoop-snappy.version}</snappy.version>
     <velocity.version>1.7</velocity.version>
