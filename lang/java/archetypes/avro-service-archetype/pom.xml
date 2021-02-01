@@ -23,7 +23,7 @@
   <parent>
     <artifactId>avro-archetypes-parent</artifactId>
     <groupId>org.apache.avro</groupId>
-    <version>1.8.2.7.0.2.1-SNAPSHOT</version>
+    <version>1.8.2.7.2.8.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
