@@ -45,7 +45,7 @@
       -Dhadoop.version=1 or leave unspecified to build against Hadoop 2
     -->
     <hadoop1.version>1.2.1</hadoop1.version>
-    <hadoop2.version>3.1.1.7.2.11.6-1</hadoop2.version>
+    <hadoop2.version>3.1.1.7.2.14.0-149</hadoop2.version>
     <jackson.version>1.9.13</jackson.version>
     <jackson-mapper-asl.version>1.9.13-cloudera.1</jackson-mapper-asl.version>
     <jetty.version>9.4.31.v20200723</jetty.version>
