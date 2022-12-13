@@ -33,12 +33,8 @@
   <name>Apache Avro Maven Plugin</name>
   <description>Maven plugin for Avro IDL and Specific API Compilers</description>
 
-  <prerequisites>
-    <maven>${maven.version}</maven>
-  </prerequisites>
-
   <properties>
-    <pluginTestingVersion>1.3</pluginTestingVersion>
+    <pluginTestingVersion>3.3.0</pluginTestingVersion>
   </properties>
 
   <build>
@@ -63,18 +59,23 @@
     <!-- maven -->
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>${maven.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
+      <artifactId>maven-core</artifactId>
       <version>${maven.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>file-management</artifactId>
       <version>${file-management.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-plugin-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>jsr305</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -84,7 +85,7 @@
     <!-- test-->
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-core</artifactId>
+      <artifactId>maven-compat</artifactId>
       <version>${maven.version}</version>
       <scope>test</scope>
     </dependency>
